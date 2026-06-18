@@ -9,13 +9,20 @@ function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> 
   return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(id));
 }
 
+async function handleResponse(res: Response): Promise<void> {
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(body?.message ?? `Request failed: ${res.status} ${res.statusText}`);
+  }
+}
+
 export async function uploadSubmission(payload: SubmissionPayload): Promise<void> {
   const res = await fetchWithTimeout(`${BASE}/submissions/upload`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error(`Upload failed: ${res.statusText}`);
+  await handleResponse(res);
 }
 
 export async function fetchChallenge(id: string) {
