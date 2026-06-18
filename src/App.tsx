@@ -18,7 +18,7 @@ const ACTIVE_CHALLENGE: Challenge = {
 export default function App() {
   const [wallet, setWallet] = useState('');
   const [solution, setSolution] = useState('');
-  const { status, txHash, proof, error, run, reset } = useProofPipeline(ACTIVE_CHALLENGE.id);
+  const { status, txHash, proof, error, submitClaim, reset } = useProofPipeline(ACTIVE_CHALLENGE.id);
 
   const busy = !['idle', 'error', 'success'].includes(status);
   const canSubmit = wallet.trim().length > 0 && solution.trim().length > 0 && !getWalletError(wallet);
@@ -37,7 +37,7 @@ export default function App() {
         {status !== 'success' && (
           <button
             disabled={busy || !canSubmit}
-            onClick={() => run(wallet, solution)}
+            onClick={() => submitClaim(wallet, solution)}
             style={{ width: '100%', padding: 14, background: '#0284c7', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: 16, cursor: busy || !canSubmit ? 'not-allowed' : 'pointer', opacity: busy || !canSubmit ? 0.6 : 1 }}
           >
             {busy ? 'Processing…' : 'Generate ZK-Proof & Claim Bounty'}

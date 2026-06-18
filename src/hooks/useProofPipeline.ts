@@ -12,7 +12,7 @@ export function useProofPipeline(challengeId: string) {
   const [proof, setProof] = useState('');
   const [error, setError] = useState('');
 
-  const run = async (wallet: string, solution: string) => {
+  const submitClaim = async (wallet: string, solution: string) => {
     if (!wallet.trim() || !solution.trim()) return;
     setError('');
     try {
@@ -46,5 +46,5 @@ export function useProofPipeline(challengeId: string) {
 
   const reset = () => { setStatus('idle'); setError(''); setProof(''); setTxHash(''); };
 
-  return { status, txHash, proof, error, run, reset };
+  return { status, txHash, proof, error, submitClaim, reset };
 }
