@@ -4,6 +4,7 @@ import ChallengeCard from './components/ChallengeCard';
 import ProofStatus from './components/ProofStatus';
 import { useProofPipeline } from './hooks/useProofPipeline';
 import { Challenge } from './types';
+import { getWalletError } from './utils/validate';
 
 const ACTIVE_CHALLENGE: Challenge = {
   id: 'challenge-001',
@@ -20,7 +21,7 @@ export default function App() {
   const { status, txHash, proof, error, run, reset } = useProofPipeline(ACTIVE_CHALLENGE.id);
 
   const busy = !['idle', 'error', 'success'].includes(status);
-  const canSubmit = wallet.trim().length > 0 && solution.trim().length > 0;
+  const canSubmit = wallet.trim().length > 0 && solution.trim().length > 0 && !getWalletError(wallet);
 
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', background: '#0f172a', color: '#f1f5f9', minHeight: '100vh', padding: 40 }}>
