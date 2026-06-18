@@ -34,7 +34,8 @@ export function useProofPipeline(challengeId: string) {
       };
       await uploadSubmission(payload);
 
-      await new Promise((r) => setTimeout(r, 2000));
+      const { CONFIRM_MOCK_DELAY_MS } = await import("../constants");
+      await new Promise((r) => setTimeout(r, CONFIRM_MOCK_DELAY_MS));
       setTxHash('0x7a30e159fa6...612d');
       setStatus('success');
     } catch (err: any) {
