@@ -17,7 +17,7 @@ const ACTIVE_CHALLENGE: Challenge = {
 };
 
 // Shared secret for AES-GCM key derivation (in production: derive from on-chain commitment)
-const SHARED_SECRET = 'zk-wavescout-aes-secret-v1';
+const SHARED_SECRET = process.env.REACT_APP_SHARED_SECRET ?? 'zk-wavescout-aes-secret-v1';
 
 export default function App() {
   const [wallet, setWallet] = useState('');
