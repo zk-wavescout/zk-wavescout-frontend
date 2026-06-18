@@ -17,7 +17,8 @@ export async function generateProof(
   contributorWallet: string
 ): Promise<ProofResult> {
   // Simulate WASM proving time (~3s)
-  await new Promise((r) => setTimeout(r, 3000));
+  const { PROOF_MOCK_DELAY_MS } = await import("./constants");
+  await new Promise((r) => setTimeout(r, PROOF_MOCK_DELAY_MS));
 
   return {
     proof: '0xaa89fde998124bcf882319208a901ffcde342569a',
