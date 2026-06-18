@@ -1,6 +1,6 @@
 import { SubmissionPayload } from './types';
 
-const BASE = '/api';
+const BASE = process.env.REACT_APP_API_BASE ?? '/api';
 
 export async function uploadSubmission(payload: SubmissionPayload): Promise<void> {
   const res = await fetch(`${BASE}/submissions/upload`, {
