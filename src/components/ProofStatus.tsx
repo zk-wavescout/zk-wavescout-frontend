@@ -29,7 +29,7 @@ export default function ProofStatus({ status, txHash, error, proof }: Props) {
   if (status === 'success') return (
     <div style={{ background: '#065f46', border: '1px solid #059669', borderRadius: 6, padding: 20, marginTop: 16 }}>
       <h4 style={{ margin: '0 0 8px' }}>🎉 Bounty Claimed!</h4>
-      <p style={{ margin: '4px 0' }}>TX Hash: <code>{txHash}</code></p>
+      <p style={{ margin: '4px 0' }}>TX Hash: <code style={{ wordBreak: 'break-all' }}>{txHash}</code></p>
       {proof && <p style={{ margin: '4px 0', fontSize: 12 }}>Proof: <code style={{ wordBreak: 'break-all' }}>{proof}</code></p>}
       <p style={{ margin: '4px 0', color: '#6ee7b7' }}>Solution securely forwarded to repository maintainers.</p>
     </div>
