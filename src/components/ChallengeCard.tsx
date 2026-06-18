@@ -24,7 +24,7 @@ export default function ChallengeCard({ challenge, solution, onSolutionChange }:
       <textarea
         rows={6}
         style={{ width: '100%', padding: 10, background: '#0f172a', color: '#f1f5f9', border: '1px solid #334155', borderRadius: 4, fontFamily: 'monospace', boxSizing: 'border-box' as const }}
-        placeholder="Paste your optimized script or secret preimage..." aria-label="Solution input"
+        placeholder="Paste your optimized script or secret preimage..." aria-label="Solution input" minLength={1}
         value={solution}
         onChange={(e) => onSolutionChange(e.target.value)}
       />
