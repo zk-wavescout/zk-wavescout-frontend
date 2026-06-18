@@ -52,6 +52,7 @@ export default function App() {
 
         <ProofStatus status={status} txHash={txHash} error={error} proof={proof} />
       </div>
+      <footer style={{ textAlign: "center", marginTop: 48, color: "#475569", fontSize: 12 }}>ZK-WaveScout &copy; 2026</footer>
     </div>
   );
 }
