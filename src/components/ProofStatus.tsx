@@ -36,7 +36,7 @@ export default function ProofStatus({ status, txHash, error, proof }: Props) {
   );
 
   return (
-    <p style={{ textAlign: 'center', color: '#38bdf8', fontWeight: 600, marginTop: 16 }}>
+    <p role="status" aria-live="polite" style={{ textAlign: 'center', color: '#38bdf8', fontWeight: 600, marginTop: 16 }}>
       {messages[status]}
     </p>
   );
