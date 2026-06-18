@@ -13,6 +13,7 @@ export function useProofPipeline(challengeId: string) {
   const [error, setError] = useState('');
 
   const run = async (wallet: string, solution: string) => {
+    if (!wallet.trim() || !solution.trim()) return;
     setError('');
     try {
       setStatus('proving');
