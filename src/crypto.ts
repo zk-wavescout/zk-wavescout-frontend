@@ -27,3 +27,13 @@ export async function encrypt(plaintext: string, secret: string): Promise<Encryp
     authTag: btoa(String.fromCharCode(...authTag)),
   };
 }
+
+export async function decrypt(payload: EncryptedPayload, secret: string): Promise<string> {
+  const key = await deriveKey(secret);
+  const iv = Uint8Array.from(atob(payload.iv), (c) => c.charCodeAt(0));
+  const cipher = Uint8Array.from(atob(payload.ciphertext), (c) => c.charCodeAt(0));
+  const tag = Uint8Array.from(atob(payload.authTag), (c) => c.charCodeAt(0));
+  const combined = new Uint8Array([...cipher, ...tag]);
+  const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, combined);
+  return new TextDecoder().decode(plain);
+}
