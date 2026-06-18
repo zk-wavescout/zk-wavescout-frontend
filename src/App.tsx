@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import WalletInput from './components/WalletInput';
 import ChallengeCard from './components/ChallengeCard';
 import ProofStatus from './components/ProofStatus';
-import { generateProof } from './prover';
-import { encrypt } from './crypto';
-import { uploadSubmission } from './api';
-import { Challenge, ProofStatus as Status } from './types';
+import { useProofPipeline } from './hooks/useProofPipeline';
+import { Challenge } from './types';
 
 const ACTIVE_CHALLENGE: Challenge = {
   id: 'challenge-001',
@@ -16,48 +14,13 @@ const ACTIVE_CHALLENGE: Challenge = {
   currency: 'USDC',
 };
 
-// Shared secret for AES-GCM key derivation (in production: derive from on-chain commitment)
-const SHARED_SECRET = process.env.REACT_APP_SHARED_SECRET ?? 'zk-wavescout-aes-secret-v1';
-
 export default function App() {
   const [wallet, setWallet] = useState('');
   const [solution, setSolution] = useState('');
-  const [status, setStatus] = useState<Status>('idle');
-  const [txHash, setTxHash] = useState('');
-  const [proof, setProof] = useState('');
-  const [error, setError] = useState('');
+  const { status, txHash, proof, error, run, reset } = useProofPipeline(ACTIVE_CHALLENGE.id);
 
-  const handleClaim = async () => {
-    if (!wallet.trim() || !solution.trim()) return;
-    setError('');
-
-    try {
-      setStatus('proving');
-      const { proof: proofHex } = await generateProof(solution, wallet);
-      setProof(proofHex);
-
-      setStatus('encrypting');
-      const { ciphertext, iv, authTag } = await encrypt(solution, SHARED_SECRET);
-
-      setStatus('submitting');
-      await uploadSubmission({
-        contributorAddress: wallet,
-        encryptedCode: ciphertext,
-        iv,
-        authTag,
-        proof: proofHex,
-        challengeId: ACTIVE_CHALLENGE.id,
-      });
-
-      // Simulate Soroban on-chain confirmation (~2s)
-      await new Promise((r) => setTimeout(r, 2000));
-      setTxHash('0x7a30e159fa6...612d');
-      setStatus('success');
-    } catch (err: any) {
-      setError(err.message);
-      setStatus('error');
-    }
-  };
+  const busy = !['idle', 'error', 'success'].includes(status);
+  const canSubmit = wallet.trim().length > 0 && solution.trim().length > 0;
 
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', background: '#0f172a', color: '#f1f5f9', minHeight: '100vh', padding: 40 }}>
@@ -68,23 +31,21 @@ export default function App() {
 
       <div style={{ maxWidth: 640, margin: '0 auto' }}>
         <WalletInput value={wallet} onChange={setWallet} />
-        <ChallengeCard
-          challenge={ACTIVE_CHALLENGE}
-          solution={solution}
-          onSolutionChange={setSolution}
-        />
+        <ChallengeCard challenge={ACTIVE_CHALLENGE} solution={solution} onSolutionChange={setSolution} />
 
-        {status === 'success' ? null : ['idle', 'error'].includes(status) ? (
+        {status !== 'success' && (
           <button
-            disabled={!wallet.trim() || !solution.trim()}
-            onClick={handleClaim}
-            style={{ width: '100%', padding: 14, background: '#0284c7', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: 16, cursor: 'pointer' }}
+            disabled={busy || !canSubmit}
+            onClick={() => run(wallet, solution)}
+            style={{ width: '100%', padding: 14, background: '#0284c7', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: 16, cursor: busy || !canSubmit ? 'not-allowed' : 'pointer', opacity: busy || !canSubmit ? 0.6 : 1 }}
           >
-            Generate ZK-Proof &amp; Claim Bounty
+            {busy ? 'Processing…' : 'Generate ZK-Proof & Claim Bounty'}
           </button>
-        ) : (
-          <button disabled style={{ width: '100%', padding: 14, background: '#0284c7', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: 16, opacity: 0.6, cursor: 'not-allowed' }}>
-            Processing…
+        )}
+
+        {status === 'success' && (
+          <button onClick={reset} style={{ width: '100%', padding: 14, background: '#334155', color: '#f1f5f9', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: 16, cursor: 'pointer', marginTop: 8 }}>
+            Submit Another
           </button>
         )}
 
