@@ -22,3 +22,8 @@ export interface ProofResult {
   proof: string;
   publicInputs: string[];
 }
+
+export interface ApiError {
+  message: string;
+  code?: string;
+}
